@@ -58,9 +58,7 @@ const App = () => {
 
       <div className="form-container">
         <form onSubmit={handleSubmit} className="text-form">
-          <label>
-            Type here:{" "}
-            <textarea
+          <textarea
               id="input"
               name="myInput"
               type="text"
@@ -69,8 +67,7 @@ const App = () => {
               onChange={(e) => setInputText(e.target.value)}
               className="input-field"
             />
-          </label>
-          <p>{manglishText}</p>
+          {/* <p>{manglishText}</p> */}
           <button type="submit" className="submit-button">
             Send
           </button>
