@@ -1,10 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useScript } from "./utils/useScript";
 const API_SOURCE = import.meta.env.VITE_MARIABOT_API_URL;
 const MODEL_API_URL = `http://${API_SOURCE}/text`;
 
 const App = () => {
   const [inputText, setInputText] = useState("");
+
+  const loadVarnam = () => {
+    const input = document.getElementById("input");
+    window["plugVarnam"](input, {
+      schemeID: "ml",
+    });
+  };
+
+  useScript({ url: "https://api.varnamproject.com/embed.js", onLoad: loadVarnam });
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -48,6 +58,7 @@ const App = () => {
           <label>
             Type here:{" "}
             <textarea
+              id="input"
               name="myInput"
               type="text"
               value={inputText}
