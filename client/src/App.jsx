@@ -3,9 +3,11 @@ import axios from "axios";
 import { useScript } from "./utils/useScript";
 const API_SOURCE = import.meta.env.VITE_MARIABOT_API_URL;
 const MODEL_API_URL = `http://${API_SOURCE}/text`;
+import ml2en from "./utils/ml2en";
 
 const App = () => {
   const [inputText, setInputText] = useState("");
+  const [manglishText, setManglishText] = useState("")
 
   const loadVarnam = () => {
     const input = document.getElementById("input");
@@ -14,14 +16,13 @@ const App = () => {
     });
   };
 
-  // git login test
-
   useScript({ url: "https://api.varnamproject.com/embed.js", onLoad: loadVarnam });
 
   async function handleSubmit(e) {
+    setManglishText(ml2en(inputText))
     e.preventDefault();
     const text = {
-      text: inputText,
+      text: manglishText,
     };
     await axios
       .post(MODEL_API_URL, text, { responseType: "blob" })
@@ -69,6 +70,7 @@ const App = () => {
               className="input-field"
             />
           </label>
+          <p>{manglishText}</p>
           <button type="submit" className="submit-button">
             Send
           </button>
