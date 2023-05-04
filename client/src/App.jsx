@@ -71,7 +71,7 @@ const App = () => {
   }
 
   return (
-    <div>
+    <div className="parent">
       <div className="title">
         <h1>MariaBot</h1>
         <div className="title-caption">
