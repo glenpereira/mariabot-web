@@ -7,7 +7,27 @@ import ml2en from "./utils/ml2en";
 
 const App = () => {
   const [inputText, setInputText] = useState("");
-  const [manglishText, setManglishText] = useState("")
+  const [manglishText, setManglishText] = useState("");
+
+  useEffect(() => {
+    let spaceTimeout = ""
+    window.addEventListener("keydown", (event) => {
+      spaceTimeout = setTimeout(() => {
+        setInputText(event.target.value);
+        console.log("in useeffect " + event.target.value);
+      }, 2000);
+    });
+
+    return () => {
+      console.log("cleanup timeout")
+      clearTimeout(spaceTimeout)
+    }
+  }, [inputText]);
+
+  function inputHandler(event) {
+    setInputText(event.target.value);
+    console.log(event.target.value);
+  }
 
   const loadVarnam = () => {
     const input = document.getElementById("input");
@@ -16,10 +36,13 @@ const App = () => {
     });
   };
 
-  useScript({ url: "https://api.varnamproject.com/embed.js", onLoad: loadVarnam });
+  useScript({
+    url: "https://api.varnamproject.com/embed.js",
+    onLoad: loadVarnam,
+  });
 
   async function handleSubmit(e) {
-    setManglishText(ml2en(inputText))
+    setManglishText(ml2en(inputText));
     e.preventDefault();
     const text = {
       text: manglishText,
@@ -59,15 +82,18 @@ const App = () => {
       <div className="form-container">
         <form onSubmit={handleSubmit} className="text-form">
           <textarea
-              id="input"
-              name="myInput"
-              type="text"
-              value={inputText}
-              placeholder="Type Manglish text here."
-              onChange={(e) => setInputText(e.target.value)}
-              className="input-field"
-            />
-          {/* <p>{manglishText}</p> */}
+            id="input"
+            // ref={ref}
+            name="myInput"
+            type="text"
+            // defaultValue={"Type Malayalam text here."}
+            value={inputText}
+            placeholder="Type Manglish text here."
+            onChange={inputHandler}
+            className="input-field"
+          />
+          <p>{manglishText}</p>
+          <p>{inputText}</p>
           <button type="submit" className="submit-button">
             Send
           </button>
