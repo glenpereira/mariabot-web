@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useScript } from "./utils/useScript";
 const API_SOURCE = import.meta.env.VITE_MARIABOT_API_URL;
-const MODEL_API_URL = `http://${API_SOURCE}/text`;
+const MODEL_API_URL = `${API_SOURCE}/text`;
 import ml2en from "./utils/ml2en";
 
 import { play } from "./assets";
@@ -11,6 +11,7 @@ import AudioPlayer from "./components/AudioPlayer";
 const App = () => {
   const [inputText, setInputText] = useState("");
   const [manglishText, setManglishText] = useState("");
+  const [fileName, setFileName] = useState("")
 
   useEffect(() => {
     let spaceTimeout = "";
@@ -46,20 +47,23 @@ const App = () => {
 
   async function handleSubmit(e) {
     setManglishText(ml2en(inputText));
+    setFileName(Date.now().toString())
+    console.log(fileName)
     e.preventDefault();
     const text = {
       text: manglishText,
+      name: fileName
     };
     await axios
       .post(MODEL_API_URL, text, { responseType: "blob" })
       .then((res) => {
         //create file link in browser's memory
         const url = window.URL.createObjectURL(new Blob([res.data]));
-
+        console.log(res.data)
         //create "a" HTML element with href to file and click
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", "sample.wav"); // or any other extension
+        link.setAttribute("download", fileName + ".wav"); // or any other extension
         document.body.appendChild(link);
         link.click();
 
