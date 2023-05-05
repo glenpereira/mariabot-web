@@ -5,12 +5,15 @@ const API_SOURCE = import.meta.env.VITE_MARIABOT_API_URL;
 const MODEL_API_URL = `http://${API_SOURCE}/text`;
 import ml2en from "./utils/ml2en";
 
+import { play } from "./assets";
+import AudioPlayer from "./components/AudioPlayer";
+
 const App = () => {
   const [inputText, setInputText] = useState("");
   const [manglishText, setManglishText] = useState("");
 
   useEffect(() => {
-    let spaceTimeout = ""
+    let spaceTimeout = "";
     window.addEventListener("keydown", (event) => {
       spaceTimeout = setTimeout(() => {
         setInputText(event.target.value);
@@ -19,9 +22,9 @@ const App = () => {
     });
 
     return () => {
-      console.log("cleanup timeout")
-      clearTimeout(spaceTimeout)
-    }
+      console.log("cleanup timeout");
+      clearTimeout(spaceTimeout);
+    };
   }, [inputText]);
 
   function inputHandler(event) {
@@ -80,6 +83,11 @@ const App = () => {
       </div>
 
       <div className="form-container">
+        <div className="play-container">
+          <a href="#">
+            <img src={play} alt="play-button" className="play-button"></img>
+          </a>
+        </div>
         <form onSubmit={handleSubmit} className="text-form">
           <textarea
             id="input"
@@ -99,6 +107,7 @@ const App = () => {
           </button>
         </form>
       </div>
+      <AudioPlayer />
     </div>
   );
 };
