@@ -1,14 +1,26 @@
-/* eslint-disable react/prop-types */
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from "react";
+import styles from "../styles/AudioPlayer.module.css";
 
-import { play, pause, skip_left, skip_right } from '../assets'
+import { play, pause, skip_left, skip_right } from "../assets";
 
-const Controls = ({audioRef}) => {
-  const [isPlaying, setIsPlaying] = useState(false)
+const Controls = ({ audioRef, progressBarRef, duration, setTimeProgress }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const playAnimationRef = useRef();
 
   const togglePlayPause = () => {
-    setIsPlaying((prev) => !prev)
-  }
+    setIsPlaying((prev) => !prev);
+  };
+
+  const repeat = useCallback(() => {
+    const currentTime = audioRef.current.currentTime;
+    setTimeProgress(currentTime);
+    progressBarRef.current.value = currentTime;
+    progressBarRef.current.style.setProperty(
+      "--range-progress",
+      `${(progressBarRef.current.value / duration) * 100}%`
+    );
+    playAnimationRef.current = requestAnimationFrame(repeat);
+  }, [audioRef, duration, progressBarRef, setTimeProgress]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -16,17 +28,19 @@ const Controls = ({audioRef}) => {
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying, audioRef]);
+    playAnimationRef.current = requestAnimationFrame(repeat);
+  }, [isPlaying, audioRef, repeat]);
 
   return (
-    <div className="controls-wrapper">
-      <div className="controls">
+    <div className={styles["controls-wrapper"]}>
+      <div className={styles.controls}>
         <button onClick={togglePlayPause}>
-          {isPlaying ? <img src={pause}/> : <img src={play}/>}
+          {isPlaying ? <img src={pause} /> : <img src={play} />}
         </button>
       </div>
+      
     </div>
-  )
-}
+  );
+};
 
-export default Controls
+export default Controls;

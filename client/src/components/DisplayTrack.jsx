@@ -1,11 +1,21 @@
-/* eslint-disable react/prop-types */
 
+const DisplayTrack = ({ audioSource, audioRef, setDuration, progressBarRef }) => {
+  const onLoadedMetadata = () => {
+    console.log(audioRef.current.duration);
+    const seconds = audioRef.current.duration;
+    setDuration(seconds);
+    progressBarRef.current.max = seconds;
+  };
 
-const DisplayTrack = ({currentTrack, audioRef}) => {
-  console.log(audioRef)
+  
+
   return (
     <div>
-      <audio src={currentTrack.src} ref={audioRef}></audio>
+      <audio
+        src={audioSource}
+        ref={audioRef}
+        onLoadedMetadata={onLoadedMetadata}
+      ></audio>
     </div>
   );
 };

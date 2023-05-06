@@ -5,13 +5,14 @@ const API_SOURCE = import.meta.env.VITE_MARIABOT_API_URL;
 const MODEL_API_URL = `${API_SOURCE}/text`;
 import ml2en from "./utils/ml2en";
 
-import { play } from "./assets";
+import { play, tracks } from "./assets";
 import AudioPlayer from "./components/AudioPlayer";
 
 const App = () => {
   const [inputText, setInputText] = useState("");
   const [manglishText, setManglishText] = useState("");
   const [fileName, setFileName] = useState("")
+  const [audioData, setAudioData] = useState(tracks)
 
   useEffect(() => {
     let spaceTimeout = "";
@@ -54,6 +55,7 @@ const App = () => {
       text: manglishText,
       name: fileName
     };
+    console.log(text)
     await axios
       .post(MODEL_API_URL, text, { responseType: "blob" })
       .then((res) => {
@@ -95,23 +97,26 @@ const App = () => {
         <form onSubmit={handleSubmit} className="text-form">
           <textarea
             id="input"
-            // ref={ref}
             name="myInput"
             type="text"
-            // defaultValue={"Type Malayalam text here."}
             value={inputText}
             placeholder="Type Manglish text here."
             onChange={inputHandler}
             className="input-field"
           />
-          <p>{manglishText}</p>
-          <p>{inputText}</p>
+          {/* <p>{manglishText}</p> */}
+          {/* <p>{inputText}</p> */}
           <button type="submit" className="submit-button">
             Send
           </button>
         </form>
       </div>
-      <AudioPlayer />
+      <ul className="audio-list">
+        {audioData.map((track) => (
+          <AudioPlayer key={track.id} audioSource={track.src} audioText={track.text} />
+        ))}
+      </ul>
+      {/* <AudioPlayer /> */}
     </div>
   );
 };

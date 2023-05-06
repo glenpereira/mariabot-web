@@ -1,5 +1,15 @@
 .audio-player {
+  display: flex;
   background-color: white;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  width: 90%;
+  margin: 20px;
+  padding: 15px;
+  border: 1px solid #dbe2ea;
+  border-radius: 6px;
+  box-shadow: 0px 4px 8px 0px rgba(44, 39, 56, 0.04);
 }
 
 .inner {
@@ -36,47 +46,26 @@
   height: 100%;
 }
 
-.audio-image {
-  width: 300px;
-  height: 300px;
-  background: #1e1e1e; 
-}
-
-.audio-icon {
-  font-size: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 80px;
-  width: 80px;
-  border-radius: 50%;
-  background: #989898;
-}
-
-.audio-image img {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  vertical-align: middle;
-}
-
 /* controls */
 .controls-wrapper {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 10px;
 }
 
-.controls button, .volume button {
+.controls{
+  height: 44px;
+}
+
+.controls button {
   border: none;
   background-color: transparent;
-  margin-right: 8px;
   cursor: pointer;
+  height: 44px;
 }
 
-button svg {
-  font-size: 20px;
+.controls img {
+  width: 44px;
 }
 
 .volume {
@@ -93,6 +82,7 @@ button svg {
   align-items: center;
   gap: 10px;
   width: 100%;
+  margin-left: 20px;
 }
 
 /* time */
@@ -103,7 +93,7 @@ button svg {
 }
 
 .time.current {
-  color: #f50;
+  color: #0880ae;
 }
 
 /* Top bar */
