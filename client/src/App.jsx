@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useScript } from "./utils/useScript";
 const API_SOURCE = import.meta.env.VITE_MARIABOT_API_URL;
+const SERVER_SOURCE = import.meta.env.VITE_MARIABOT_SERVER_URL
 const MODEL_API_URL = `${API_SOURCE}/text`;
+const SERVER_URL_POST = `${SERVER_SOURCE}/audio`
 import ml2en from "./utils/ml2en";
 
 import { play, tracks } from "./assets";
@@ -10,9 +12,15 @@ import AudioPlayer from "./components/AudioPlayer";
 
 const App = () => {
   const [inputText, setInputText] = useState("");
+  const [postData, setPostData] = useState({
+    text: "",
+    author: "",
+  })
   const [manglishText, setManglishText] = useState("");
-  const [fileName, setFileName] = useState("")
-  const [audioData, setAudioData] = useState(tracks)
+  const [fileName, setFileName] = useState("");
+  const [audioData, setAudioData] = useState([]);
+  const [audioMetadata, setAudioMetadata] = useState([])
+  const [alertMessage, setAlertMessage] = useState("")
 
   useEffect(() => {
     let spaceTimeout = "";
@@ -46,37 +54,83 @@ const App = () => {
     onLoad: loadVarnam,
   });
 
-  async function handleSubmit(e) {
-    setManglishText(ml2en(inputText));
-    setFileName(Date.now().toString())
-    console.log(fileName)
-    e.preventDefault();
-    const text = {
-      text: manglishText,
-      name: fileName
-    };
-    console.log(text)
-    await axios
-      .post(MODEL_API_URL, text, { responseType: "blob" })
-      .then((res) => {
-        //create file link in browser's memory
-        const url = window.URL.createObjectURL(new Blob([res.data]));
-        console.log(res.data)
-        //create "a" HTML element with href to file and click
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", fileName + ".wav"); // or any other extension
-        document.body.appendChild(link);
-        link.click();
+  // function downloadFile() {
+  //   //deprecated function to download file directly from browser
+  //   //create file link in browser's memory
+  //   const url = window.URL.createObjectURL(new Blob([res.data]));
+  //   console.log(res.data);
+  //   //create "a" HTML element with href to file and click
+  //   const link = document.createElement("a");
+  //   link.href = url;
+  //   link.setAttribute("download", fileName + ".wav"); // or any other extension
+  //   document.body.appendChild(link);
+  //   link.click();
 
-        //clean up "a" element & remove objecturl
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-        console.log(res);
+  //   //clean up "a" element & remove objecturl
+  //   document.body.removeChild(link);
+  //   URL.revokeObjectURL(url);
+  //   console.log(res);
+  // }
+
+  async function getAudioList(){
+    await axios.get(SERVER_URL_POST).then((res) => {
+      console.log(res.data)
+      setAudioData(res.data)
+    })
+    console.log(audioData)
+  }
+
+  async function postAudioMetadata(data){
+    await axios.post(SERVER_URL_POST, data).then((res) => {
+      setAlertMessage(res.data.message)
+      console.log(`Alert Message: ${alertMessage}`)
+    }).catch((err) => {
+      console.log(err)
+    })
+    getAudioList()
+  }
+
+  async function postInputText(data){
+    await axios
+      .post(MODEL_API_URL, data)
+      .then((res) => {
+        setAudioMetadata(res.data)
+        console.log(res.data)
+        console.log(audioMetadata)
+        postAudioMetadata(res.data)
       })
       .catch((error) => {
         console.log(error);
       });
+      
+  }
+
+  useEffect(() => {
+    getAudioList()
+    console.log("calling audio from database")
+  }, [])
+
+  useEffect(() => {
+    setManglishText(ml2en(inputText));
+  }, [inputText])
+
+
+  function handleSubmit(e) {
+    console.log(manglishText)
+    setFileName(Date.now().toString());
+    console.log(fileName);
+    e.preventDefault();
+    const text = {
+      text: manglishText,
+      author: "glen"
+    };
+    setPostData(postData => ({
+      ...postData,
+      ...text
+    }))
+    console.log(text)
+    console.log(postData);
+    postInputText(text)
   }
 
   return (
@@ -89,11 +143,11 @@ const App = () => {
       </div>
 
       <div className="form-container">
-        <div className="play-container">
+        {/* <div className="play-container">
           <a href="#">
             <img src={play} alt="play-button" className="play-button"></img>
           </a>
-        </div>
+        </div> */} 
         <form onSubmit={handleSubmit} className="text-form">
           <textarea
             id="input"
@@ -113,7 +167,11 @@ const App = () => {
       </div>
       <ul className="audio-list">
         {audioData.map((track) => (
-          <AudioPlayer key={track.id} audioSource={track.src} audioText={track.text} />
+          <AudioPlayer
+            key={track._id}
+            audioSource={track.src}
+            audioText={track.text}
+          />
         ))}
       </ul>
       {/* <AudioPlayer /> */}
