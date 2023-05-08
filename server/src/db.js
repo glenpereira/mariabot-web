@@ -1,7 +1,8 @@
 const mongodb = require("mongodb");
 
 const MongoClient = mongodb.MongoClient;
-const dbURL = "mongodb://0.0.0.0:27017/mariabot";
+const dbURL =
+  "mongodb+srv://parapsychic:parapsychic@mariabotdb.cpllr3y.mongodb.net/?retryWrites=true&w=majority";
 
 let _db;
 
