@@ -5,10 +5,14 @@
   font-family: "IBM Plex Sans", sans-serif;
 }
 
+body {
+  background-color: #ebf4f8;
+}
+
 .parent {
   display: flex;
   background-color: #ebf4f8;
-  position: fixed;
+  position: relative;
   height: 100%;
   width: 100%;
   top: 0;

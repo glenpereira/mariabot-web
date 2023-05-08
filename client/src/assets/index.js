@@ -2,6 +2,7 @@ import play from "./play.png"
 import pause from "./pause.png"
 import skip_left from "./skip_left.png"
 import skip_right from "./skip_right.png"
+import trash from "./trash.png"
 
 const tracks = [
   {
@@ -23,5 +24,6 @@ export {
   play,
   pause,
   skip_left,
-  skip_right
+  skip_right,
+  trash
 }

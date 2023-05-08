@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useScript } from "./utils/useScript";
 const API_SOURCE = import.meta.env.VITE_MARIABOT_API_URL;
-const SERVER_SOURCE = import.meta.env.VITE_MARIABOT_SERVER_URL
+const SERVER_SOURCE = import.meta.env.VITE_MARIABOT_SERVER_URL;
 const MODEL_API_URL = `${API_SOURCE}/text`;
-const SERVER_URL_POST = `${SERVER_SOURCE}/audio`
+const SERVER_URL = `${SERVER_SOURCE}/audio`;
 import ml2en from "./utils/ml2en";
 
-import { play, tracks } from "./assets";
+import { play } from "./assets";
 import AudioPlayer from "./components/AudioPlayer";
 
 const App = () => {
@@ -15,12 +15,12 @@ const App = () => {
   const [postData, setPostData] = useState({
     text: "",
     author: "",
-  })
+  });
   const [manglishText, setManglishText] = useState("");
   const [fileName, setFileName] = useState("");
   const [audioData, setAudioData] = useState([]);
-  const [audioMetadata, setAudioMetadata] = useState([])
-  const [alertMessage, setAlertMessage] = useState("")
+  const [audioMetadata, setAudioMetadata] = useState([]);
+  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     let spaceTimeout = "";
@@ -72,65 +72,80 @@ const App = () => {
   //   console.log(res);
   // }
 
-  async function getAudioList(){
-    await axios.get(SERVER_URL_POST).then((res) => {
-      console.log(res.data)
-      setAudioData(res.data)
-    })
-    console.log(audioData)
+  async function getAudioList() {
+    await axios.get(SERVER_URL).then((res) => {
+      console.log(res.data);
+      setAudioData(res.data);
+    });
+    console.log(audioData);
   }
 
-  async function postAudioMetadata(data){
-    await axios.post(SERVER_URL_POST, data).then((res) => {
-      setAlertMessage(res.data.message)
-      console.log(`Alert Message: ${alertMessage}`)
-    }).catch((err) => {
-      console.log(err)
-    })
-    getAudioList()
+  async function postAudioMetadata(data) {
+    await axios
+      .post(SERVER_URL, data)
+      .then((res) => {
+        setAlertMessage(res.data.message);
+        console.log(`Alert Message: ${alertMessage}`);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    getAudioList();
   }
 
-  async function postInputText(data){
+  async function postInputText(data) {
     await axios
       .post(MODEL_API_URL, data)
       .then((res) => {
-        setAudioMetadata(res.data)
-        console.log(res.data)
-        console.log(audioMetadata)
-        postAudioMetadata(res.data)
+        setAudioMetadata(res.data);
+        console.log(res.data);
+        console.log(audioMetadata);
+        postAudioMetadata(res.data);
       })
       .catch((error) => {
         console.log(error);
       });
-      
+  }
+
+  async function deleteAudio(name) {
+    await axios
+      .delete(`${SERVER_URL}/${name}`)
+      .then((res) => {
+        setAlertMessage(res.data.message);
+        console.log(`Alert Message: ${alertMessage}`);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    getAudioList();
   }
 
   useEffect(() => {
-    getAudioList()
-    console.log("calling audio from database")
-  }, [])
+    getAudioList();
+    console.log("calling audio from database");
+  }, []);
 
   useEffect(() => {
     setManglishText(ml2en(inputText));
-  }, [inputText])
-
+  }, [inputText]);
 
   function handleSubmit(e) {
-    console.log(manglishText)
-    setFileName(Date.now().toString());
-    console.log(fileName);
     e.preventDefault();
+    console.log("Malayalam text: " + manglishText);
+    if (inputText.trim() === "") {
+      return;
+    }
     const text = {
       text: manglishText,
-      author: "glen"
+      author: "glen",
     };
-    setPostData(postData => ({
+    setPostData((postData) => ({
       ...postData,
-      ...text
-    }))
-    console.log(text)
+      ...text,
+    }));
+    console.log(text);
     console.log(postData);
-    postInputText(text)
+    postInputText(text);
   }
 
   return (
@@ -147,7 +162,7 @@ const App = () => {
           <a href="#">
             <img src={play} alt="play-button" className="play-button"></img>
           </a>
-        </div> */} 
+        </div> */}
         <form onSubmit={handleSubmit} className="text-form">
           <textarea
             id="input"
@@ -166,11 +181,13 @@ const App = () => {
         </form>
       </div>
       <ul className="audio-list">
-        {audioData.map((track) => (
+        {[...audioData].reverse().map((track) => (
           <AudioPlayer
             key={track._id}
             audioSource={track.src}
             audioText={track.text}
+            audioName={track.name}
+            deleteAudio={deleteAudio}
           />
         ))}
       </ul>

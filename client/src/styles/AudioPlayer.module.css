@@ -68,6 +68,19 @@
   width: 44px;
 }
 
+.controls_trash{
+  height: 30px;
+  margin-left: 20px;
+}
+
+.controls_trash button {
+  height: 30px;
+}
+
+.controls_trash img {
+  width: 30px;
+}
+
 .volume {
   display: flex;
   align-items: center;
