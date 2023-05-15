@@ -126,6 +126,10 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    console.log(typeof inputText)
+    if(inputText === undefined){
+      return
+    }
     setManglishText(ml2en(inputText));
   }, [inputText]);
 
