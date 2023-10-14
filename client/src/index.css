@@ -114,7 +114,8 @@ label {
 .audio-list {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   /* background-color: #ebf4f8; */
-  align-items: center;
+  /* align-items: center; */
+  justify-content: space-evenly;
 }

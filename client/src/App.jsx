@@ -7,7 +7,6 @@ const MODEL_API_URL = `${API_SOURCE}/text`;
 const SERVER_URL = `${SERVER_SOURCE}/audio`;
 import ml2en from "./utils/ml2en";
 
-import { play } from "./assets";
 import AudioPlayer from "./components/AudioPlayer";
 
 const App = () => {
@@ -17,7 +16,6 @@ const App = () => {
     author: "",
   });
   const [manglishText, setManglishText] = useState("");
-  const [fileName, setFileName] = useState("");
   const [audioData, setAudioData] = useState([]);
   const [audioMetadata, setAudioMetadata] = useState([]);
   const [alertMessage, setAlertMessage] = useState("");
@@ -78,6 +76,7 @@ const App = () => {
       setAudioData(res.data);
     });
     console.log(audioData);
+    setInputText("")
   }
 
   async function postAudioMetadata(data) {
@@ -97,15 +96,25 @@ const App = () => {
     await axios
       .post(MODEL_API_URL, data)
       .then((res) => {
-        setAudioMetadata(res.data);
-        console.log(res.data);
-        console.log(audioMetadata);
-        postAudioMetadata(res.data);
+        const data = {
+          name: res.data.name,
+          src: res.data.src,
+          author: res.data.author,
+          text: res.data.text,
+          malayalamText: inputText
+        }
+        setAudioMetadata(data);
+        console.log(data);
+        postAudioMetadata(data);
       })
       .catch((error) => {
         console.log(error);
       });
   }
+
+  useEffect(() => {
+    console.log(audioMetadata)
+  }, [audioMetadata])
 
   async function deleteAudio(name) {
     await axios
@@ -123,6 +132,8 @@ const App = () => {
   useEffect(() => {
     getAudioList();
     console.log("calling audio from database");
+     // need only run once on page load
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -148,9 +159,12 @@ const App = () => {
       ...text,
     }));
     console.log(text);
-    console.log(postData);
     postInputText(text);
   }
+
+  useEffect(() => {
+    console.log(postData)
+  }, [postData])
 
   return (
     <div className="parent">
@@ -189,7 +203,7 @@ const App = () => {
           <AudioPlayer
             key={track._id}
             audioSource={track.src}
-            audioText={track.text}
+            audioText={track.malayalamText}
             audioName={track.name}
             deleteAudio={deleteAudio}
           />

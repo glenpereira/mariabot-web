@@ -31,6 +31,8 @@ router.post("", (req, res, next) => {
     name: req.body.name,
     src: req.body.src,
     author: req.body.author,
+    text: req.body.text,
+    malayalamText: req.body.malayalamText
   };
   console.log(newAudioFile);
   db.getDb()
