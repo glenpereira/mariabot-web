@@ -18,7 +18,7 @@ The generated audio file is then received by a node backend and stores it in a c
 
 ### Credits
 
-* <a id="subins2000">[subins2000](https://github.com/varnamproject/webpage-embed-plugin)</a>  for creating the Malayalam IME as part of the [varnam project](https://github.com/varnamproject)
+* <a id="subins2000">[subins2000](https://github.com/varnamproject/webpage-embed-plugin)</a>  for creating the Malayalam IME as part of the [varnam project](https://github.com/varnamproject).
 
 * [knadh](https://github.com/knadh/ml2en) for writing the script that transliterates malayalam text to manglish.
 
